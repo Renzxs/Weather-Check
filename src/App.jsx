@@ -8,7 +8,7 @@ function App() {
     <>
       <Wind></Wind>
       <Waves></Waves>
-      <h1 className='font-bold text-red-600'>Hello, World!</h1>
+      <h1 className='font-montserrat font-bold text-red-600'>Hello, World!</h1>
     </>
   )
 }
