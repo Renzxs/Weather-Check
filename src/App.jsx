@@ -50,24 +50,90 @@ function DateTimeClock() {
 }
 
 function WeatherChecker() {
-  const [searchInput, setSearchInput] = useState("");
+  
+  const [searchInput, setSearchInput] = useState("Manila");
+  const [weather, setWeather] = useState(
+    {
+      city: "",
+      temperature: 0, 
+      windspeed: 0,
+      humidity: 0,
+      icon: ""
+    }
+  );
+  const [weatherIcon, setWeatherIcon] = useState("");
+
+  useEffect(() => {
+    search();
+  })
+
+  const search = async () => {
+    if(searchInput === ""){
+      return 0;
+    }
+
+    const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${searchInput}&units=Metric&appid=${process.meta.env.VITE_APIKEY}`;
+
+    let response = await fetch(API_URL);
+    let data = await response.json();
+
+    setWeather(
+      {
+        city: data.name,
+        temperature: Math.floor(data.main.temp), 
+        windspeed: Math.floor(data.wind.speed),
+        humidity: data.main.humidity,
+        icon: data.weather[0].icon
+      }
+    );
+
+
+    if(weather.icon === "01d" || weather.icon === "01n"){
+      setWeatherIcon(Clear);
+    } 
+    else if(weather.icon === "02d" || weather.icon === "02n"){
+      setWeatherIcon(Cloud);
+    }
+    else if(weather.icon === "03d" || weather.icon === "03n"){
+      setWeatherIcon(Drizzle);
+    }
+    else if(weather.icon === "04d" || weather.icon === "04n"){
+      setWeatherIcon(Drizzle);
+    }
+    else if(weather.icon === "09d" || weather.icon === "09n"){
+      setWeatherIcon(Rain);
+    }
+    else if(weather.icon === "10d" || weather.icon === "10n"){
+      setWeatherIcon(Rain);
+    }
+    else if(weather.icon === "13d" || weather.icon === "13n"){
+      setWeatherIcon(Snow);
+    }
+    else {
+      setWeather(Clear);
+    }
+
+    console.log(searchInput);
+    console.log(weather);
+
+  }
 
   return (
     <div className='mt-10 w-[90%] max-sm:w-full p-10 max-sm:p-4 bg-black rounded-[20px] bg-opacity-50'>
-      <form className='flex justify-start items-center gap-4 '>
+      <div className='flex justify-start items-center gap-4 '>
         <input value={searchInput} onChange={(e) => {setSearchInput(e.target.value)}} className='font-montserrat w-[50%] max-md:w-[90%] text-white border-2 outline-none border-white bg-transparent rounded-[10px] py-[5px] px-[15px]' placeholder='Search a city' type="text" name="searchInput" id="searchInput" />
-        <button type="submit">
+        <button onClick={() => {search()}}>
           <Search className='text-white'></Search>
         </button>
-      </form>
+      </div>
 
       <div className='flex justify-around items-center mt-10 max-lg:flex-col gap-10 pb-10'>
         
         <div className='flex justify-normal items-center gap-6'>
-          <img className='w-[170px] max-sm:w-[120px]' src={Cloud} alt={Cloud} />
+          <img className='w-[170px] max-sm:w-[120px]' src={weatherIcon} alt={weatherIcon} />
           <div className='max-md:flex max-md:flex-col-reverse'>
-            <p className='max-md:text-[30px] max-sm:text-[15px]  text-white font-montserrat font-bold text-[30px]'>Republic of the Philippines</p>
-            <h1 className='max-md:text-[50px] max-sm:text-[35px] text-white font-montserrat font-extrabold text-[80px]'>28°C</h1>
+            <p className='max-md:text-[30px] max-sm:text-[15px]  text-white font-montserrat font-bold text-[30px]'>{weather.name}</p>
+            <h1 className='max-md:text-[50px] max-sm:text-[35px] text-white font-montserrat font-extrabold text-[80px]'>{weather.temperature}°C</h1>
           </div>
         </div>
 
@@ -75,14 +141,14 @@ function WeatherChecker() {
           <div className='flex justify-start items-center gap-6'>
               <Wind className='text-white size-[81px] max-md:size-[40px]'></Wind>
               <div>
-                <h1 className='text-white font-montserrat font-extrabold text-[45px] max-md:text-[25px]'>18 km/h</h1>
+                <h1 className='text-white font-montserrat font-extrabold text-[45px] max-md:text-[25px]'>{weather.temperature} km/h</h1>
                 <p className='text-white  font-montserrat font-medium text-[20px] max-md:text-[15px]'>Wind Speed</p>
               </div>
           </div>
           <div className='flex justify-start items-center gap-6'>
               <Waves className='text-white size-[81px] max-md:size-[40px]'></Waves>
               <div>
-                <h1 className='text-white font-montserrat font-extrabold text-[45px] max-md:text-[25px]'>68%</h1>
+                <h1 className='text-white font-montserrat font-extrabold text-[45px] max-md:text-[25px]'>{weather.humidity}%</h1>
                 <p className='text-white  font-montserrat font-medium text-[20px] max-md:text-[15px]'>Humidity</p>
               </div>
           </div>
